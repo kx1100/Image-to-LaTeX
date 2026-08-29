@@ -216,3 +216,10 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Datasets and generated artifacts (im2latex)
+#   Reproduced by `im2latex data prepare`, never committed. The manifest that pins the
+#   dataset version and checksums IS tracked, so a prepared dataset is verifiable.
+data/*
+!data/.gitkeep
+!data/manifest.json

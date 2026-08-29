@@ -1,0 +1,7 @@
+# Configuration for the M1 data pipeline. Paths are relative to the repository root
+# unless absolute.
+
+paths:
+  raw: data/raw # downloaded archives, exactly as fetched
+  interim: data/interim # extracted and normalized, pre-split
+  processed: data/processed # split manifests, tokenizer, synthetic renders
