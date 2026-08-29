@@ -41,7 +41,7 @@ see [DECISIONS.md](./DECISIONS.md) D-002.
 | R-5 | Produce a per-output confidence score (from decoder token probabilities) and flag low-confidence recognitions for review. |
 | R-6 | Validate output before returning it: brace/bracket balance plus a headless compile check, with repair heuristics or a flagged best-partial result on failure. |
 | R-7 | Expose the trained model behind an inference API. |
-| R-8 | Preprocess input images to a normalized form: grayscale, denoise, binarize, deskew, crop-to-content, scale/aspect normalization, contrast normalization. |
+| R-8 | Preprocess input images to a normalized form: grayscale, denoise, contrast normalization, binarize, deskew, crop-to-content, scale/aspect normalization. (Order is significant — see [DECISIONS.md](./DECISIONS.md) D-008.) |
 
 ### 2.2 Non-functional
 
@@ -86,7 +86,7 @@ Image → Preprocessing → Recognition Model → Postprocessing/Validation → 
 
 | Part | Responsibility | Technology |
 |---|---|---|
-| **Preprocessing** | Grayscale, denoise (median/Gaussian), binarize (Otsu/adaptive), deskew (Hough), crop to content bbox, scale/aspect normalization, contrast normalization | Python, OpenCV, NumPy |
+| **Preprocessing** | Grayscale, denoise (median/Gaussian), contrast normalization (CLAHE), binarize (Otsu/adaptive), deskew (Hough), crop to content bbox, scale/aspect normalization | Python, OpenCV, NumPy |
 | **Tokenizer** | Custom LaTeX-token vocabulary (`\frac`, `{`, `}`, `^`, `_`, `\alpha`, digits, operators) — not character- or word-level | Hugging Face `tokenizers` |
 | **Encoder** | Image → 2D grid of feature vectors, preserving spatial layout (math is 2D, not linear) | PyTorch; CNN (ResNet-style) or small ViT |
 | **Attention** | Bridges encoder features to decoder steps; attention maps double as a debugging/explainability view | PyTorch |

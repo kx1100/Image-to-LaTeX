@@ -5,3 +5,36 @@ paths:
   raw: data/raw # downloaded archives, exactly as fetched
   interim: data/interim # extracted and normalized, pre-split
   processed: data/processed # split manifests, tokenizer, synthetic renders
+
+preprocessing:
+  # Stage order is significant. Contrast normalization runs BEFORE binarization: ahead
+  # of the threshold it is what lets binarization survive the uneven lighting of a phone
+  # photograph, and after it, equalizing a two-valued histogram lifts the background off
+  # zero and breaks every stage that locates ink by findNonZero. See DECISIONS.md D-008.
+  stages:
+    - grayscale
+    - denoise
+    - normalize_contrast
+    - binarize
+    - deskew
+    - crop_to_content
+    - resize_and_pad
+
+  params:
+    denoise:
+      method: median # median over gaussian: removes speckle without softening strokes
+      ksize: 3
+    normalize_contrast:
+      clip_limit: 2.0
+      tile_grid_size: 8
+    binarize:
+      method: adaptive # 'otsu' is the better choice for flatbed scans
+      block_size: 35
+      offset: 10.0
+    deskew:
+      max_angle_deg: 15.0
+    crop_to_content:
+      padding: 8
+    resize_and_pad:
+      height: 64
+      width: 512
