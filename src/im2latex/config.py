@@ -33,14 +33,58 @@ class PathsConfig:
 
 
 @dataclass(frozen=True)
+class PreprocessConfig:
+    """The preprocessing stage sequence and each stage's parameters (R-8).
+
+    Order is configuration rather than code so that it can be changed and measured
+    without touching the pipeline — see D-008 for why the current order is what it is.
+    """
+
+    stages: tuple[str, ...]
+    params: dict[str, dict[str, Any]]
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> PreprocessConfig:
+        stages = tuple(data["stages"])
+        if not stages:
+            raise ValueError("preprocessing.stages must list at least one stage")
+
+        # Imported here rather than at module scope: pipeline imports this module, and
+        # naming the stage registry at import time would close the cycle.
+        from im2latex.preprocessing.pipeline import STAGES
+
+        unknown = [stage for stage in stages if stage not in STAGES]
+        if unknown:
+            known = ", ".join(sorted(STAGES))
+            raise ValueError(f"Unknown preprocessing stage(s): {unknown}. Known stages: {known}")
+
+        duplicates = {stage for stage in stages if stages.count(stage) > 1}
+        if duplicates:
+            raise ValueError(f"Preprocessing stage(s) listed more than once: {sorted(duplicates)}")
+
+        params = dict(data.get("params") or {})
+        orphaned = [stage for stage in params if stage not in stages]
+        if orphaned:
+            raise ValueError(
+                f"preprocessing.params has entries for stages that are not run: {orphaned}"
+            )
+
+        return cls(stages=stages, params={key: dict(value) for key, value in params.items()})
+
+
+@dataclass(frozen=True)
 class Config:
     """Top-level configuration."""
 
     paths: PathsConfig
+    preprocessing: PreprocessConfig
 
     @classmethod
     def from_dict(cls, data: dict[str, Any], root: Path) -> Config:
-        return cls(paths=PathsConfig.from_dict(data["paths"], root))
+        return cls(
+            paths=PathsConfig.from_dict(data["paths"], root),
+            preprocessing=PreprocessConfig.from_dict(data["preprocessing"]),
+        )
 
 
 def _resolve(value: str, root: Path) -> Path:

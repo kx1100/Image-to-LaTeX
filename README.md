@@ -25,7 +25,7 @@ Image → Preprocessing → Recognition Model → Postprocessing/Validation → 
 
 | Stage | What it does | Tech |
 |---|---|---|
-| **Preprocessing** | Grayscale, denoise, binarize, deskew, crop/normalize, contrast correction | OpenCV, NumPy |
+| **Preprocessing** | Grayscale, denoise, contrast correction, binarize, deskew, crop/normalize | OpenCV, NumPy |
 | **Recognition Model** | CNN/ViT encoder → attention → Transformer decoder generates LaTeX tokens via beam search | PyTorch, Hugging Face `transformers`/`tokenizers` |
 | **Postprocessing/Validation** | Brace/bracket checks, headless compile check, repair heuristics, confidence scoring | KaTeX (headless) / `matplotlib.mathtext` |
 | **Serving** | Wraps the trained model behind an inference API | FastAPI, ONNX Runtime / TorchServe |

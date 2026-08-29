@@ -7,10 +7,10 @@ flowchart TB
     subgraph PRE["Preprocessing Module<br/>Python · OpenCV · NumPy"]
         P1[Grayscale Conversion]
         P2[Denoise<br/>Median / Gaussian Filter]
-        P3[Binarize<br/>Otsu / Adaptive Threshold]
-        P4[Deskew<br/>Hough Transform]
-        P5[Crop to Bounding Box<br/>Normalize Scale/Aspect]
-        P6[Contrast Normalization]
+        P3[Contrast Normalization<br/>CLAHE]
+        P4[Binarize<br/>Otsu / Adaptive Threshold]
+        P5[Deskew<br/>Hough Transform]
+        P6[Crop to Bounding Box<br/>Normalize Scale/Aspect]
         P1 --> P2 --> P3 --> P4 --> P5 --> P6
     end
 

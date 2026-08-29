@@ -116,6 +116,45 @@ from the corpora and its coverage checked (an M1 gate).
 
 ---
 
+### D-008 — Contrast normalization runs before binarization
+**Status:** Accepted (approved by the owner, 2026-08-29)
+
+The preprocessing sequence is:
+
+```
+grayscale → denoise → contrast normalization → binarize → deskew → crop → resize/pad
+```
+
+This supersedes the ordering originally written in project_spec.md §3.1 and
+architecture.md, which placed contrast normalization last. R-8, architecture.md, the
+PLAN.md §3 table, and README.md were updated to match.
+
+**Why:** two reasons, one expected and one found while implementing.
+
+1. A photographed page is rarely lit evenly — a hand shadow or a window leaves a
+   gradient across the paper that a threshold reads as ink. Equalizing locally (CLAHE)
+   first flattens the gradient while leaving the ink/paper difference intact, so the
+   threshold sees an evenly lit page. This is the whole reason R-8 lists contrast
+   normalization at all.
+2. Running it *after* binarization is not merely a no-op, as first assumed, but
+   destructive. CLAHE redistributes the two-valued histogram onto a non-zero floor:
+   measured on a test image, background 0 becomes 3, so every pixel is non-zero.
+   `crop_to_content` and `deskew` locate ink with `findNonZero`, so both would treat
+   the entire canvas as content and silently stop working.
+
+**Tradeoff:** CLAHE can amplify paper texture and sensor noise into something the
+threshold then treats as ink, which is why denoise precedes it. Its `clip_limit` is the
+knob that trades stroke recovery against false ink, and it is exposed in
+`configs/data.yaml` rather than hard-coded.
+
+**How it is enforced:** the stage sequence is configuration, not code
+(`configs/data.yaml`, validated at load time), so the ordering can be changed and
+measured rather than argued about. Two tests hold the decision in place — one asserts
+the repository config keeps contrast normalization ahead of binarization, and one
+demonstrates the failure directly on an unevenly lit fixture.
+
+---
+
 ## Technology choices
 
 | Area | Chosen | Status | Why this, over what |

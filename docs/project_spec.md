@@ -47,12 +47,14 @@
 
 ### 3.1 Preprocessing Module
 Responsibilities:
+Stages run in this order; the sequence is significant (see DECISIONS.md D-008):
+
 - Convert to grayscale
 - Denoise (median/Gaussian filtering)
+- Contrast normalization for uneven lighting (CLAHE)
 - Binarize (Otsu or adaptive threshold)
 - Deskew (Hough transform-based angle detection + rotation correction)
 - Crop to content bounding box, normalize scale/aspect ratio
-- Contrast normalization for uneven lighting
 
 **Tech:** OpenCV (Python), NumPy
 
