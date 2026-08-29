@@ -63,12 +63,8 @@ Currently still in development!
 
 ## Getting Started
 
-> _Setup instructions coming soon — installation, training pipeline usage, and inference API examples will be added as the project progresses through the milestones above._
+> _Setup instructions coming soon
 
 ## Contributing
 
-Contribution guidelines TBD.
-
-## License
-
-TBD.
+me
