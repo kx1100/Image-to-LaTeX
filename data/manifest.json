@@ -1,0 +1,52 @@
+{
+  "checksums": {
+    "formula_images.tar.gz": "cf25f2408f1ea09bbd096890a6361533",
+    "im2latex_formulas.lst": "974c0a14f0daa6d91ecd0e625f1ddf52",
+    "im2latex_test.lst": "1bc17b865796dca5df15250b4da7804f",
+    "im2latex_train.lst": "d5607c37aa00576098a9e4bad84a7040",
+    "im2latex_validate.lst": "cf6eeee02bc443b1b9557685fbfe7ea5",
+    "readme.txt": "3d4cb64d8c403148ff06370d71072cdc"
+  },
+  "dataset": "im2latex-100k",
+  "doi": "10.5281/zenodo.56198",
+  "formula_count": 103559,
+  "formula_encoding": "latin-1",
+  "license": "CC0-1.0",
+  "manifest_version": 1,
+  "prepared_at": "2026-09-02T06:16:54+00:00",
+  "source_urls": {
+    "formula_images.tar.gz": "https://zenodo.org/records/56198/files/formula_images.tar.gz?download=1",
+    "im2latex_formulas.lst": "https://zenodo.org/records/56198/files/im2latex_formulas.lst?download=1",
+    "im2latex_test.lst": "https://zenodo.org/records/56198/files/im2latex_test.lst?download=1",
+    "im2latex_train.lst": "https://zenodo.org/records/56198/files/im2latex_train.lst?download=1",
+    "im2latex_validate.lst": "https://zenodo.org/records/56198/files/im2latex_validate.lst?download=1",
+    "readme.txt": "https://zenodo.org/records/56198/files/readme.txt?download=1"
+  },
+  "splits": {
+    "test": {
+      "malformed_lines": 0,
+      "missing_images": 0,
+      "out_of_range_indices": 0,
+      "path": "data/processed/im2latex-100k/test.jsonl",
+      "samples": 10355,
+      "unique_formulas": 10354
+    },
+    "train": {
+      "malformed_lines": 0,
+      "missing_images": 0,
+      "out_of_range_indices": 0,
+      "path": "data/processed/im2latex-100k/train.jsonl",
+      "samples": 83884,
+      "unique_formulas": 83872
+    },
+    "validate": {
+      "malformed_lines": 0,
+      "missing_images": 0,
+      "out_of_range_indices": 0,
+      "path": "data/processed/im2latex-100k/validate.jsonl",
+      "samples": 9320,
+      "unique_formulas": 9320
+    }
+  },
+  "tool_version": "0.1.0"
+}

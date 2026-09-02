@@ -22,6 +22,7 @@ class PathsConfig:
     raw: Path
     interim: Path
     processed: Path
+    manifest: Path
 
     @classmethod
     def from_dict(cls, data: dict[str, Any], root: Path) -> PathsConfig:
@@ -29,6 +30,9 @@ class PathsConfig:
             raw=_resolve(data["raw"], root),
             interim=_resolve(data["interim"], root),
             processed=_resolve(data["processed"], root),
+            # The manifest is the one artifact under data/ that is committed, so it has
+            # a default rather than being required of every config.
+            manifest=_resolve(data.get("manifest", "data/manifest.json"), root),
         )
 
 
@@ -78,13 +82,29 @@ class Config:
 
     paths: PathsConfig
     preprocessing: PreprocessConfig
+    #: Repository root. Kept so that artifacts can record paths relative to it — an
+    #: absolute path in a committed file is machine-specific and would differ on every
+    #: checkout.
+    root: Path
 
     @classmethod
     def from_dict(cls, data: dict[str, Any], root: Path) -> Config:
         return cls(
             paths=PathsConfig.from_dict(data["paths"], root),
             preprocessing=PreprocessConfig.from_dict(data["preprocessing"]),
+            root=root,
         )
+
+    def relative(self, path: Path) -> str:
+        """Express a path relative to the repository root, for recording in artifacts.
+
+        Falls back to the absolute path when it lies outside the repository, which is
+        possible when a config points at storage elsewhere on the machine.
+        """
+        try:
+            return path.relative_to(self.root).as_posix()
+        except ValueError:
+            return path.as_posix()
 
 
 def _resolve(value: str, root: Path) -> Path:
