@@ -9,12 +9,15 @@ from __future__ import annotations
 import typer
 
 from im2latex import __version__
+from im2latex.data.cli import app as data_app
 
 app = typer.Typer(
     help="Image-to-LaTeX data pipeline and recognition tooling.",
     no_args_is_help=True,
     add_completion=False,
 )
+
+app.add_typer(data_app, name="data")
 
 
 @app.callback()

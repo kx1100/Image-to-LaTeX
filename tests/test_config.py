@@ -63,6 +63,24 @@ def test_relative_paths_resolve_against_repository_root_not_cwd(tmp_path, monkey
     assert config.paths.raw == tmp_path / "data" / "raw"
 
 
+def test_relative_expresses_paths_against_the_repository_root(tmp_path):
+    """Committed artifacts must not embed machine-specific absolute paths."""
+    config_file = write_config(tmp_path / "configs", DEFAULT_PATHS)
+    config = load_config(config_file)
+
+    assert config.relative(tmp_path / "data" / "processed" / "train.jsonl") == (
+        "data/processed/train.jsonl"
+    )
+
+
+def test_relative_falls_back_to_absolute_for_paths_outside_the_repository(tmp_path):
+    config_file = write_config(tmp_path / "configs", DEFAULT_PATHS)
+    config = load_config(config_file)
+
+    outside = Path(tmp_path.anchor) / "elsewhere" / "data.jsonl"
+    assert config.relative(outside) == outside.as_posix()
+
+
 def test_absolute_paths_are_left_alone(tmp_path):
     absolute = (tmp_path / "elsewhere" / "raw").as_posix()
     config_file = write_config(

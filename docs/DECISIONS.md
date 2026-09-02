@@ -155,6 +155,61 @@ demonstrates the failure directly on an unevenly lit fixture.
 
 ---
 
+### D-009 — im2latex-100k is pinned to the Zenodo deposit, with the canonical splits
+**Status:** Accepted
+
+The dataset is fetched from Zenodo record 56198 (DOI `10.5281/zenodo.56198`, CC0-1.0),
+verified against the published MD5 of every file, and split using the **published**
+train/validate/test `.lst` files rather than a re-split of our own.
+
+**Why Zenodo over the author's mirror:** a DOI, immutable records, published checksums,
+and an explicit licence. The mirror at `im2markup.yuntiandeng.com` is kept as a fallback
+for outages, with a measured caveat — its `.lst` copies are one byte longer than
+Zenodo's (a trailing newline), so they cannot satisfy the published MD5 and will be
+rejected. Verification is never relaxed to accommodate a source.
+
+**Why the published splits:** M2's baseline is meant to be comparable with the
+im2latex literature. A re-split would make our numbers incomparable for no gain, since
+the published splits are already fixed and documented as N-4 requires.
+
+**What preparing them measured** (`im2latex data audit`):
+
+| | train | validate | test |
+|---|---|---|---|
+| samples | 83,884 | 9,320 | 10,355 |
+| unique formulas | 83,872 | 9,320 | 10,354 |
+| distinct tokens | 820 | 487 | 498 |
+| median tokens | 54 | 54 | 54 |
+| max tokens | 790 | 617 | 557 |
+
+103,559 samples total, 0 missing images, 0 malformed lines. Formula index overlap
+between splits is **0**, so N-4's core requirement holds.
+
+**Two upstream defects found while preparing, both recorded rather than silently
+worked around:**
+
+1. **Bare carriage returns inside formulas.** The corpus contains 1,005 `\r`
+   characters *within* formula text. Since the split files address formulas by line
+   number, reading with `str.splitlines()` — which breaks on `\r` — yields 104,564
+   lines instead of 103,559 and mispairs every formula after the first occurrence with
+   the wrong image. The reader splits on `\n` only, and a regression test covers it.
+   The file is Latin-1, not UTF-8; the encoding used is recorded in the manifest.
+
+2. **Image-level contamination across splits.** The splits are disjoint by formula
+   index, but 9 rendered images appear in both train and an evaluation split (5 in
+   validate, 4 in test), reached from two different indices whose LaTeX differs only
+   trivially — a leading `%`, for instance. This is literal train-on-test data. At
+   0.009% of the corpus it will not move a metric, and it is a property of the
+   published splits rather than something this pipeline introduced, so it is reported
+   by `data audit` but does not fail the check. **It should be quoted alongside M2's
+   test numbers** rather than forgotten.
+
+**Tradeoff:** accepting the published splits means accepting their defects, including
+the contamination above. The alternative — re-splitting to remove it — costs
+comparability with every published baseline, which is worse for nine images.
+
+---
+
 ## Technology choices
 
 | Area | Chosen | Status | Why this, over what |
